@@ -252,3 +252,5 @@ curl -X POST http://<gateway>/ordering/api/orders \
 | Un port est déjà utilisé | Une exécution précédente tourne encore. Fermez-la avec `Ctrl+C`, puis relancez. |
 | La page d'un service direct (sans passer par la passerelle) affiche une erreur sur `/` | Normal : les services n'ont pas de page d'accueil. Utilisez l'interface `web` ou les routes `/api/...`. |
 | La commande (`POST /ordering/api/orders`) renvoie une erreur 400 | Le produit demandé n'existe pas, ou la commande est vide. Vérifiez les `productId` envoyés. |
+#   e c o m m e r c e - a p p  
+ 
