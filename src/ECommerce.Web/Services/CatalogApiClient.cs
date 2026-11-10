@@ -10,4 +10,4 @@ public class CatalogApiClient(HttpClient httpClient)
         await httpClient.GetFromJsonAsync<List<ProductDto>>("/catalog/api/products", ct) ?? [];
 }
 
-public record ProductDto(int Id, string Name, string? Description, decimal Price, int AvailableStock);
+public record ProductDto(int Id, string Name, string? Description, decimal Price, int AvailableStock, decimal CurrentPrice, int? PromoPercent, DateOnly? PromoValidUntil);

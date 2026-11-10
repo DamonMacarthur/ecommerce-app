@@ -30,7 +30,19 @@ else
                 <tr>
                     <td>@p.Name</td>
                     <td>@p.Description</td>
-                    <td class="text-end">@p.Price.ToString("C")</td>
+                    <td class="text-end">
+                        @if (p.CurrentPrice < p.Price)
+                        {
+                            <s class="text-muted">@p.Price.ToString("C")</s>
+                            <strong>@p.CurrentPrice.ToString("C")</strong>
+                            <span class="badge bg-danger">-@p.PromoPercent%</span>
+                            <small class="text-muted d-block">until @p.PromoValidUntil?.ToString("d")</small>
+                        }
+                        else
+                        {
+                            @p.Price.ToString("C")
+                        }
+                    </td>
                     <td class="text-end">@p.AvailableStock</td>
                     <td class="text-end">
                         <button class="btn btn-sm btn-outline-primary" @onclick="() => AddToCart(p)">Add</button>
@@ -50,7 +62,7 @@ else
         <ul>
             @foreach (var line in _cart)
             {
-                <li>@line.Value × @line.Key.Name (@line.Key.Price.ToString("C"))</li>
+                <li>@line.Value × @line.Key.Name (@line.Key.CurrentPrice.ToString("C"))</li>
             }
         </ul>
 
