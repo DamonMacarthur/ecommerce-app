@@ -31,7 +31,7 @@ Web (Blazor Server) -> Gateway (YARP) -> Catalog.Api
 
 ## Known gaps / gotchas
 
-- Stock (`AvailableStock`) is neither checked nor decremented on order; `Quantity` is not validated, and the endpoint does not check `Customer` either (only `OrderingDbContext` marks it required, max 200 chars).
+- Stock (`AvailableStock`) is neither checked nor decremented on order; the order endpoint rejects a blank/oversized `Customer` (max 200, mirrors `OrderingDbContext`), an empty item list and `Quantity <= 0` with a 400.
 - `/health` and `/alive` are mapped only in Development (`MapDefaultEndpoints`).
 - The cart UI only supports adding items (no remove/adjust), despite the README.
 - `README.md` is the French training-course guide; each project also has a small README listing its files.

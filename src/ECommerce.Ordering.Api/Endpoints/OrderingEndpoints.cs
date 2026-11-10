@@ -7,6 +7,9 @@ namespace ECommerce.Ordering.Api.Endpoints;
 
 public static class OrderingEndpoints
 {
+    // Keep in sync with HasMaxLength on Order.Customer in OrderingDbContext.
+    private const int MaxCustomerLength = 200;
+
     public static RouteGroupBuilder MapOrderingEndpoints(this IEndpointRouteBuilder routes)
     {
         var group = routes.MapGroup("/api/orders").WithTags("Ordering");
@@ -27,9 +30,24 @@ public static class OrderingEndpoints
             CatalogServiceClient catalog,
             CancellationToken ct) =>
         {
-            if (request.Items.Count == 0)
+            if (string.IsNullOrWhiteSpace(request.Customer))
+            {
+                return Results.BadRequest("A customer name is required.");
+            }
+
+            if (request.Customer.Length > MaxCustomerLength)
+            {
+                return Results.BadRequest($"The customer name must not exceed {MaxCustomerLength} characters.");
+            }
+
+            if (request.Items is null || request.Items.Count == 0)
             {
                 return Results.BadRequest("An order must contain at least one item.");
+            }
+
+            if (request.Items.FirstOrDefault(i => i.Quantity <= 0) is { } invalid)
+            {
+                return Results.BadRequest($"The quantity for product {invalid.ProductId} must be greater than zero.");
             }
 
             var order = new Order
