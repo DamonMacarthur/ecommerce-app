@@ -28,6 +28,7 @@ Web (Blazor Server) -> Gateway (YARP) -> Catalog.Api
 - **Gateway routing** lives in `Gateway/appsettings.json` (`/catalog/*`, `/ordering/*`, prefix stripped by `PathRemovePrefix`). The Web app only talks to the gateway, so paths in `Web/Services/*ApiClient.cs` include the prefix (`/catalog/api/products`), whereas Ordering calls Catalog directly without prefix (`/api/products/{id}`).
 - **Order creation** (`Ordering.Api/Endpoints/OrderingEndpoints.cs`): for each line it calls Catalog via `CatalogServiceClient`, copies name and price into `OrderItem` (snapshot), then sets status Pending -> Confirmed and saves. API DTOs are duplicated per project (`ProductDto`/`CatalogProduct`, `OrderDto`...); there is no shared contracts project, so change both sides together.
 - **Data**: each API has its own EF Core `UseInMemoryDatabase`, created with `EnsureCreated()` at startup. Catalog seeds 4 products via `HasData` in `CatalogDbContext`. No migrations; data is lost on restart.
+- **Promotions**: `Product` has `PromoPercent` + `PromoValidUntil` (inclusive, UTC day); `Product.CurrentPrice` is computed at request time and is what Ordering bills (`UnitPrice`) and Web displays. `POST /api/products/{id}/promo` sets one; Mechanical Keyboard is seeded at 30% until 2026-11-15.
 
 ## Known gaps / gotchas
 

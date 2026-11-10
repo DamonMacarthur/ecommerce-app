@@ -37,8 +37,36 @@ public static class CatalogEndpoints
         })
         .WithName("CreateProduct");
 
+        // Set (or replace) a promotion on a product.
+        group.MapPost("/{id:int}/promo", async (int id, AddPromoRequest request, CatalogDbContext db) =>
+        {
+            if (request.Percent is < 1 or > 100)
+            {
+                return Results.BadRequest("The promo percentage must be between 1 and 100.");
+            }
+
+            if (request.ValidUntil < DateOnly.FromDateTime(DateTime.UtcNow))
+            {
+                return Results.BadRequest("The promo validity date must not be in the past.");
+            }
+
+            var product = await db.Products.FindAsync(id);
+            if (product is null)
+            {
+                return Results.NotFound();
+            }
+
+            product.PromoPercent = request.Percent;
+            product.PromoValidUntil = request.ValidUntil;
+            await db.SaveChangesAsync();
+
+            return Results.Ok(product);
+        })
+        .WithName("AddPromo");
+
         return group;
     }
 }
 
 public record CreateProductRequest(string Name, string? Description, decimal Price, int AvailableStock);
+public record AddPromoRequest(int Percent, DateOnly ValidUntil);

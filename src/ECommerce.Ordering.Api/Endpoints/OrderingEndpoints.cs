@@ -70,7 +70,7 @@ public static class OrderingEndpoints
                 {
                     ProductId = product.Id,
                     ProductName = product.Name,
-                    UnitPrice = product.Price,
+                    UnitPrice = product.CurrentPrice,
                     Quantity = item.Quantity
                 });
             }

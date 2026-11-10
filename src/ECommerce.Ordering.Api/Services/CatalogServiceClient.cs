@@ -20,4 +20,4 @@ public class CatalogServiceClient(HttpClient httpClient)
     }
 }
 
-public record CatalogProduct(int Id, string Name, string? Description, decimal Price, int AvailableStock);
+public record CatalogProduct(int Id, string Name, string? Description, decimal Price, int AvailableStock, decimal CurrentPrice);
