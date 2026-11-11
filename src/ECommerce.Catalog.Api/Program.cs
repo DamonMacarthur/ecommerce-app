@@ -8,8 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.AddServiceDefaults();
 
 builder.Services.AddOpenApi();
-builder.Services.AddDbContext<CatalogDbContext>(options =>
-    options.UseInMemoryDatabase("catalog"));
+builder.AddNpgsqlDbContext<CatalogDbContext>("catalogdb");
 
 var app = builder.Build();
 
@@ -23,11 +22,19 @@ if (app.Environment.IsDevelopment())
 
 app.MapCatalogEndpoints();
 
-// Ensure the in-memory database is created and seeded on startup.
+// Apply pending migrations (schema + seed data) on startup. Non-relational providers
+// (the in-memory database used by the integration tests) cannot migrate.
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<CatalogDbContext>();
-    db.Database.EnsureCreated();
+    if (db.Database.IsRelational())
+    {
+        db.Database.Migrate();
+    }
+    else
+    {
+        db.Database.EnsureCreated();
+    }
 }
 
 app.Run();

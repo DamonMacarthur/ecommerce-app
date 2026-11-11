@@ -39,4 +39,6 @@ standard resilience handlers from ServiceDefaults (auto-retry, timeout, circuit-
 
 ## Storage
 
-In-memory (`UseInMemoryDatabase("ordering")`). Orders do **not** survive a restart.
+PostgreSQL database `orderingdb` (Aspire resource `postgres`, persistent volume), registered with
+`AddNpgsqlDbContext<OrderingDbContext>("orderingdb")`. The schema comes from the migrations in
+`Data/Migrations`, applied with `Migrate()` at startup. Orders survive a restart.

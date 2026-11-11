@@ -30,24 +30,9 @@ public static class OrderingEndpoints
             CatalogServiceClient catalog,
             CancellationToken ct) =>
         {
-            if (string.IsNullOrWhiteSpace(request.Customer))
+            if (ValidateOrderRequest(request) is { } error)
             {
-                return Results.BadRequest("A customer name is required.");
-            }
-
-            if (request.Customer.Length > MaxCustomerLength)
-            {
-                return Results.BadRequest($"The customer name must not exceed {MaxCustomerLength} characters.");
-            }
-
-            if (request.Items is null || request.Items.Count == 0)
-            {
-                return Results.BadRequest("An order must contain at least one item.");
-            }
-
-            if (request.Items.FirstOrDefault(i => i.Quantity <= 0) is { } invalid)
-            {
-                return Results.BadRequest($"The quantity for product {invalid.ProductId} must be greater than zero.");
+                return Results.BadRequest(error);
             }
 
             var order = new Order
@@ -84,6 +69,51 @@ public static class OrderingEndpoints
         .WithName("CreateOrder");
 
         return group;
+    }
+
+    private static string? ValidateOrderRequest(CreateOrderRequest request)
+    {
+        string? error = null;
+        if (request.Customer != null && request.Customer.Trim().Length > 0)
+        {
+            if (request.Customer.Length <= MaxCustomerLength)
+            {
+                if (request.Items != null)
+                {
+                    if (request.Items.Count > 0)
+                    {
+                        for (var i = 0; i < request.Items.Count; i++)
+                        {
+                            if (request.Items[i].Quantity <= 0)
+                            {
+                                if (error == null)
+                                {
+                                    error = $"The quantity for product {request.Items[i].ProductId} must be greater than zero.";
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        error = "An order must contain at least one item.";
+                    }
+                }
+                else
+                {
+                    error = "An order must contain at least one item.";
+                }
+            }
+            else
+            {
+                error = $"The customer name must not exceed {MaxCustomerLength} characters.";
+            }
+        }
+        else
+        {
+            error = "A customer name is required.";
+        }
+
+        return error;
     }
 }
 

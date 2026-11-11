@@ -21,11 +21,21 @@ public sealed class OrderingApiFactory : WebApplicationFactory<Program>
     {
         // Aspire normally injects this setting. The fake handler answers instead of the network.
         builder.UseSetting("services:catalog:http:0", "http://catalog.test");
+        builder.UseSetting("ConnectionStrings:orderingdb", "Host=ordering.test;Database=orderingdb");
 
         builder.ConfigureTestServices(services =>
         {
-            services.RemoveAll<DbContextOptions<OrderingDbContext>>();
-            services.RemoveAll<IDbContextOptionsConfiguration<OrderingDbContext>>();
+            // AddNpgsqlDbContext registers a pooled context: remove the context, its options,
+            // its options configuration and the pool services (all generic over OrderingDbContext).
+            var registrations = services
+                .Where(d => d.ServiceType == typeof(OrderingDbContext)
+                    || d.ServiceType.GenericTypeArguments.Contains(typeof(OrderingDbContext)))
+                .ToList();
+            foreach (var registration in registrations)
+            {
+                services.Remove(registration);
+            }
+
             services.AddDbContext<OrderingDbContext>(options => options.UseInMemoryDatabase(_databaseName));
 
             services.AddHttpClient<CatalogServiceClient>()

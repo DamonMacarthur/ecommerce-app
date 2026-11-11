@@ -9,8 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.AddServiceDefaults();
 
 builder.Services.AddOpenApi();
-builder.Services.AddDbContext<OrderingDbContext>(options =>
-    options.UseInMemoryDatabase("ordering"));
+builder.AddNpgsqlDbContext<OrderingDbContext>("orderingdb");
 
 // Serialize enums (e.g. OrderStatus) as strings rather than integers.
 builder.Services.ConfigureHttpJsonOptions(options =>
@@ -36,7 +35,17 @@ app.MapOrderingEndpoints();
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<OrderingDbContext>();
-    db.Database.EnsureCreated();
+
+    // Apply pending migrations on startup. Non-relational providers (the in-memory
+    // database used by the integration tests) cannot migrate.
+    if (db.Database.IsRelational())
+    {
+        db.Database.Migrate();
+    }
+    else
+    {
+        db.Database.EnsureCreated();
+    }
 }
 
 app.Run();

@@ -64,6 +64,14 @@ public sealed class CreateOrderTests : IDisposable
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
 
+    [Fact(DisplayName = "Scenario 9 - missing items property returns 400")]
+    public async Task MissingItemsProperty_Returns400()
+    {
+        var response = await PostOrderAsync("""{"customer":"Ada"}""");
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
     private Task<HttpResponseMessage> PostOrderAsync(string json) =>
         _client.PostAsync("/api/orders", new StringContent(json, Encoding.UTF8, "application/json"));
 

@@ -32,6 +32,7 @@ Ordering or the Gateway.
 
 ## Storage
 
-Uses EF Core's **in-memory** provider (`UseInMemoryDatabase("catalog")`), re-seeded on every
-startup. Data does **not** survive a restart. Swap `UseInMemoryDatabase` for `UseNpgsql` /
-`UseSqlite` to persist.
+PostgreSQL database `catalogdb` (Aspire resource `postgres`, persistent volume), registered with
+`AddNpgsqlDbContext<CatalogDbContext>("catalogdb")`. The schema and the 4 seeded products come from
+the migrations in `Data/Migrations`, applied with `Migrate()` at startup. Data survives a restart.
+Integration tests swap in the in-memory provider.

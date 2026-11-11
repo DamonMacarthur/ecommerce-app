@@ -40,14 +40,9 @@ public static class CatalogEndpoints
         // Set (or replace) a promotion on a product.
         group.MapPost("/{id:int}/promo", async (int id, AddPromoRequest request, CatalogDbContext db) =>
         {
-            if (request.Percent is < 1 or > 100)
+            if (ValidatePromo(request) is { } error)
             {
-                return Results.BadRequest("The promo percentage must be between 1 and 100.");
-            }
-
-            if (request.ValidUntil < DateOnly.FromDateTime(DateTime.UtcNow))
-            {
-                return Results.BadRequest("The promo validity date must not be in the past.");
+                return Results.BadRequest(error);
             }
 
             var product = await db.Products.FindAsync(id);
@@ -65,6 +60,38 @@ public static class CatalogEndpoints
         .WithName("AddPromo");
 
         return group;
+    }
+
+    private static string? ValidatePromo(AddPromoRequest request)
+    {
+        string? error = null;
+        if (request.Percent >= 1)
+        {
+            if (request.Percent <= 100)
+            {
+                if (request.ValidUntil >= DateOnly.FromDateTime(DateTime.UtcNow))
+                {
+                    error = null;
+                }
+                else
+                {
+                    if (error == null)
+                    {
+                        error = "The promo validity date must not be in the past.";
+                    }
+                }
+            }
+            else
+            {
+                error = "The promo percentage must be between 1 and 100.";
+            }
+        }
+        else
+        {
+            error = "The promo percentage must be between 1 and 100.";
+        }
+
+        return error;
     }
 }
 

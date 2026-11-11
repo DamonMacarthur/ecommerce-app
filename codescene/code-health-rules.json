@@ -1,0 +1,108 @@
+{
+  "usage": "Référentiel local CodeScene de ce dépôt (codescene/code-health-rules.json). Rule sets évalués de haut en bas, le premier qui correspond s'applique. Voir codescene/README.md pour la raison de chaque jeu. Prise en charge de Razor par l'outil non vérifiée : aucune règle dédiée.",
+  "rule_sets": [
+    {
+      "matching_content_path": "**/Migrations/**",
+      "matching_content_path_doc": "Migrations EF Core générées : non maintenues à la main.",
+      "rules": [
+        { "name": "Large Method", "weight": 0.0 },
+        { "name": "Complex Method", "weight": 0.0 },
+        { "name": "Brain Method", "weight": 0.0 },
+        { "name": "Code Duplication", "weight": 0.0 }
+      ]
+    },
+    {
+      "matching_content_path": "**/*.Designer.cs",
+      "matching_content_path_doc": "Fichiers générés par les designers (resx, WinForms, EF).",
+      "rules": [
+        { "name": "Large Method", "weight": 0.0 },
+        { "name": "Complex Method", "weight": 0.0 },
+        { "name": "Brain Method", "weight": 0.0 },
+        { "name": "Code Duplication", "weight": 0.0 }
+      ]
+    },
+    {
+      "matching_content_path": "**/wwwroot/lib/**",
+      "matching_content_path_doc": "Bibliothèques tierces versionnées (Bootstrap dans ECommerce.Web) : code qui n'est pas le nôtre.",
+      "rules": [
+        { "name": "Large Method", "weight": 0.0 },
+        { "name": "Complex Method", "weight": 0.0 },
+        { "name": "Brain Method", "weight": 0.0 },
+        { "name": "Code Duplication", "weight": 0.0 }
+      ]
+    },
+    {
+      "matching_content_path": "**/*.razor.js",
+      "matching_content_path_doc": "JavaScript de gabarit Blazor (ReconnectModal.razor.js) : non maintenu à la main.",
+      "rules": [
+        { "name": "Large Method", "weight": 0.0 },
+        { "name": "Complex Method", "weight": 0.0 },
+        { "name": "Brain Method", "weight": 0.0 },
+        { "name": "Code Duplication", "weight": 0.0 }
+      ]
+    },
+    {
+      "matching_content_path": "tests/**",
+      "matching_content_path_doc": "Projets de tests : duplication et taille tolérées partiellement (Arrange/Act/Assert).",
+      "rules": [
+        { "name": "Code Duplication", "weight": 0.5 },
+        { "name": "Large Method", "weight": 0.5 }
+      ],
+      "thresholds": [
+        { "name": "function_lines_of_code_warning", "value": 100 }
+      ],
+      "thresholds_doc": "Méthodes de test plus longues acceptées avant alerte."
+    },
+    {
+      "matching_content_path": "**/Data/*DbContext*.cs",
+      "matching_content_path_doc": "DbContext EF Core : OnModelCreating est déclaratif et grossit avec les données HasData.",
+      "rules": [
+        { "name": "Large Method", "weight": 0.5 }
+      ]
+    },
+    {
+      "matching_content_path": "**/Endpoints/**",
+      "matching_content_path_doc": "Gestionnaires d'API minimale (CreateOrder valide, appelle Catalog puis enregistre : le plus gros du dépôt).",
+      "thresholds": [
+        { "name": "function_cyclomatic_complexity_warning", "value": 9 },
+        { "name": "function_nesting_depth_warning", "value": 3 }
+      ],
+      "thresholds_doc": "Valeurs PROVISOIRES, pas une mesure : à calibrer par un scan de référence une fois le MCP branché. Ne pas les assouplir pour faire disparaître un constat."
+    },
+    {
+      "matching_content_path": "**/Models/**",
+      "matching_content_path_doc": "DTO volontairement dupliqués entre projets (pas de projet de contrats partagé, voir CLAUDE.md).",
+      "rules": [
+        { "name": "Code Duplication", "weight": 0.5 }
+      ]
+    },
+    {
+      "matching_content_path": "**/Services/**",
+      "matching_content_path_doc": "Clients HTTP typés et DTO copiés des autres services (CatalogServiceClient, CatalogApiClient, OrderingApiClient).",
+      "rules": [
+        { "name": "Code Duplication", "weight": 0.5 }
+      ]
+    },
+    {
+      "matching_content_path": "**/Program.cs",
+      "matching_content_path_doc": "Racines de composition : câblage linéaire des services (Aspire, EF Core, HTTP).",
+      "rules": [
+        { "name": "Large Method", "weight": 0.5 }
+      ]
+    },
+    {
+      "matching_content_path": "src/ECommerce.AppHost/**",
+      "matching_content_path_doc": "Orchestration Aspire : déclaration linéaire des ressources et de leurs références.",
+      "rules": [
+        { "name": "Large Method", "weight": 0.5 }
+      ]
+    },
+    {
+      "matching_content_path": "src/ECommerce.ServiceDefaults/**",
+      "matching_content_path_doc": "Gabarit Aspire (Extensions.cs) : code standard fourni par le modèle de projet.",
+      "rules": [
+        { "name": "Large Method", "weight": 0.5 }
+      ]
+    }
+  ]
+}
