@@ -1,0 +1,116 @@
+/* The product table keeps its semantics (explicit ARIA roles in the markup)
+   but each row is displayed as a card inside a responsive CSS grid. */
+.product-grid {
+    --bs-table-bg: transparent;
+    --bs-table-accent-bg: transparent;
+    --bs-table-color: var(--color-text);
+    display: block;
+    width: 100%;
+    margin-bottom: var(--space-5);
+    border: 0;
+}
+
+    /* Column headers stay available to assistive technologies; each card
+       repeats them visually as small labels (data-label). */
+    .product-grid thead {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip-path: inset(50%);
+        white-space: nowrap;
+    }
+
+    .product-grid tbody {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
+        gap: var(--space-5);
+    }
+
+.product-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    min-width: 0;
+    padding: var(--space-5);
+    background-color: var(--color-surface);
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow var(--duration-fast) var(--easing), transform var(--duration-fast) var(--easing);
+}
+
+@media (hover: hover) {
+    .product-card:hover {
+        box-shadow: var(--shadow-md);
+        transform: translateY(-2px);
+    }
+}
+
+    .product-card td {
+        display: block;
+        padding: 0;
+        border: 0;
+        text-align: start;
+        background-color: transparent;
+        box-shadow: none;
+        color: var(--color-text);
+        overflow-wrap: anywhere;
+    }
+
+        .product-card td[data-label]::before {
+            content: attr(data-label);
+            content: attr(data-label) / "";
+            display: block;
+            margin-bottom: var(--space-1);
+            font-size: var(--font-size-small);
+            font-weight: 600;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            color: var(--color-text-muted);
+        }
+
+    .product-card .product-name {
+        font-size: var(--font-size-h3);
+        font-weight: 650;
+        line-height: var(--line-height-heading);
+    }
+
+    .product-card .product-description {
+        color: var(--color-text-muted);
+        flex: 1;
+    }
+
+    .product-card .product-price strong {
+        font-size: 1.125rem;
+    }
+
+    .product-card .product-action {
+        margin-top: auto;
+    }
+
+        .product-card .product-action .btn {
+            width: 100%;
+        }
+
+.promo-badge {
+    background-color: var(--color-danger);
+    color: var(--color-on-danger);
+}
+
+h2 {
+    margin-top: var(--space-6);
+}
+
+ul {
+    padding-left: var(--space-5);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .product-card,
+    .product-card:hover {
+        transition: none;
+        transform: none;
+    }
+}

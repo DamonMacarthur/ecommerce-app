@@ -2,19 +2,24 @@
     position: relative;
     display: flex;
     flex-direction: column;
+    min-height: 100vh;
+    background-color: var(--color-bg);
 }
 
 main {
     flex: 1;
+    min-width: 0;
 }
 
 .sidebar {
-    background-image: linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%);
+    background-color: var(--color-sidebar-bg);
+    color: var(--color-sidebar-text);
+    border-bottom: 1px solid var(--color-border);
 }
 
 .top-row {
-    background-color: #f7f7f7;
-    border-bottom: 1px solid #d6d5d5;
+    background-color: var(--color-topbar-bg);
+    border-bottom: 1px solid var(--color-border);
     justify-content: flex-end;
     height: 3.5rem;
     display: flex;
@@ -23,8 +28,9 @@ main {
 
     .top-row ::deep a, .top-row ::deep .btn-link {
         white-space: nowrap;
-        margin-left: 1.5rem;
+        margin-left: var(--space-5);
         text-decoration: none;
+        border-radius: var(--radius-sm);
     }
 
     .top-row ::deep a:hover, .top-row ::deep .btn-link:hover {
@@ -35,6 +41,12 @@ main {
         overflow: hidden;
         text-overflow: ellipsis;
     }
+
+.content {
+    width: 100%;
+    max-width: var(--content-max-width);
+    margin-inline: auto;
+}
 
 @media (max-width: 640.98px) {
     .top-row {
@@ -53,9 +65,12 @@ main {
 
     .sidebar {
         width: 250px;
+        flex-shrink: 0;
         height: 100vh;
         position: sticky;
         top: 0;
+        border-bottom: 0;
+        border-right: 1px solid var(--color-border);
     }
 
     .top-row {
@@ -77,10 +92,10 @@ main {
 }
 
 #blazor-error-ui {
-    color-scheme: light only;
-    background: lightyellow;
+    background: var(--color-warning-bg);
+    color: var(--color-warning-text);
     bottom: 0;
-    box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.2);
+    box-shadow: var(--shadow-bar);
     box-sizing: border-box;
     display: none;
     left: 0;
