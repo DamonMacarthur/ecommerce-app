@@ -64,34 +64,17 @@ public static class CatalogEndpoints
 
     private static string? ValidatePromo(AddPromoRequest request)
     {
-        string? error = null;
-        if (request.Percent >= 1)
+        if (request.Percent < 1 || request.Percent > 100)
         {
-            if (request.Percent <= 100)
-            {
-                if (request.ValidUntil >= DateOnly.FromDateTime(DateTime.UtcNow))
-                {
-                    error = null;
-                }
-                else
-                {
-                    if (error == null)
-                    {
-                        error = "The promo validity date must not be in the past.";
-                    }
-                }
-            }
-            else
-            {
-                error = "The promo percentage must be between 1 and 100.";
-            }
-        }
-        else
-        {
-            error = "The promo percentage must be between 1 and 100.";
+            return "The promo percentage must be between 1 and 100.";
         }
 
-        return error;
+        if (request.ValidUntil < DateOnly.FromDateTime(DateTime.UtcNow))
+        {
+            return "The promo validity date must not be in the past.";
+        }
+
+        return null;
     }
 }
 

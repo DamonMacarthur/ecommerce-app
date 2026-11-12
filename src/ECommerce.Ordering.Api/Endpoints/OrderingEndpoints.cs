@@ -73,47 +73,28 @@ public static class OrderingEndpoints
 
     private static string? ValidateOrderRequest(CreateOrderRequest request)
     {
-        string? error = null;
-        if (request.Customer != null && request.Customer.Trim().Length > 0)
+        if (string.IsNullOrWhiteSpace(request.Customer))
         {
-            if (request.Customer.Length <= MaxCustomerLength)
-            {
-                if (request.Items != null)
-                {
-                    if (request.Items.Count > 0)
-                    {
-                        for (var i = 0; i < request.Items.Count; i++)
-                        {
-                            if (request.Items[i].Quantity <= 0)
-                            {
-                                if (error == null)
-                                {
-                                    error = $"The quantity for product {request.Items[i].ProductId} must be greater than zero.";
-                                }
-                            }
-                        }
-                    }
-                    else
-                    {
-                        error = "An order must contain at least one item.";
-                    }
-                }
-                else
-                {
-                    error = "An order must contain at least one item.";
-                }
-            }
-            else
-            {
-                error = $"The customer name must not exceed {MaxCustomerLength} characters.";
-            }
-        }
-        else
-        {
-            error = "A customer name is required.";
+            return "A customer name is required.";
         }
 
-        return error;
+        if (request.Customer.Length > MaxCustomerLength)
+        {
+            return $"The customer name must not exceed {MaxCustomerLength} characters.";
+        }
+
+        if (request.Items is null || request.Items.Count == 0)
+        {
+            return "An order must contain at least one item.";
+        }
+
+        var invalidLine = request.Items.FirstOrDefault(line => line.Quantity <= 0);
+        if (invalidLine is not null)
+        {
+            return $"The quantity for product {invalidLine.ProductId} must be greater than zero.";
+        }
+
+        return null;
     }
 }
 
