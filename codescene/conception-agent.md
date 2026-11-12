@@ -5,7 +5,7 @@ Aucun jeton et aucun fichier d'identifiants n'est prévu.
 
 ## 1. Objectif
 
-Brancher l'outil CodeScene local sur Claude Code par un serveur MCP, avec [code-health-rules.json](code-health-rules.json) comme référentiel,
+Brancher l'outil CodeScene local sur Claude Code par un serveur MCP, avec [code-health-rules.json](../.codescene/code-health-rules.json) comme référentiel,
 et fournir un agent qui :
 
 1. **scanne** le code modifié de la branche ;
@@ -20,7 +20,9 @@ et fournir un agent qui :
 | Accès à CodeScene | Binaire local, lancé par un wrapper. Pas de service distant ajouté par ce dépôt. |
 | Bloqueur | Sur les fichiers modifiés de la branche : smell nouveau ou aggravé par rapport à `main`, ou Code Health sous le seuil (**9,0 proposé**, à confirmer). |
 | Boucle | Bornée dans l'agent : 5 itérations au plus ; arrêt aussi si deux itérations de suite donnent les mêmes bloqueurs. |
-| Référentiel | Reste dans `codescene/`. Repli sur `.codescene/` seulement si le binaire n'accepte pas de chemin explicite, avec accord. |
+| Référentiel | `.codescene/code-health-rules.json`, l'emplacement que CodeScene lit de lui-même (`cs-mcp` n'accepte pas de chemin explicite ; déplacement validé). La documentation reste dans `codescene/`. |
+| Local et sans jeton | Analyse dans le binaire local, code jamais envoyé. Outils limités aux 7 outils d'analyse locale (`CS_ENABLED_TOOLS` dans `.mcp.json` + en-tête de l'agent) ; outils API et de compte interdits. `CS_ACCESS_TOKEN` forcé à vide : **aucun jeton**, ni dans le dépôt ni hérité. |
+| Licence | Le binaire exige une licence CodeScene : une personne ouvre une session OAuth une fois avec `cs-mcp auth` (navigateur). L'agent ne gère jamais cette session ; sans elle, il s'arrête sans score. |
 | Source du référentiel | Le dépôt GitHub a servi **une seule fois**, pour réécrire le référentiel. Ensuite, tout vient des fichiers locaux. |
 
 ## 3. Vue d'ensemble
@@ -29,7 +31,7 @@ et fournir un agent qui :
 /code-health [cible]                      (skill : point d'entrée)
       │
       ▼
-agent codescene ──► MCP codescene ──► binaire local ──► codescene/code-health-rules.json
+agent codescene ──► MCP codescene ──► binaire local ──► .codescene/code-health-rules.json
       │                (via .mcp.json + codescene.sh)
       │   boucle (5 itérations au plus) :
       │   1. périmètre   git diff main...HEAD + non commités, hors exclusions du référentiel
@@ -46,14 +48,14 @@ resultats.json ──► rapport.sh ──► artifacts/code-health/rapport.html
 
 | Composant | Fichier | Rôle | État |
 |---|---|---|---|
-| Référentiel | [code-health-rules.json](code-health-rules.json) | 12 jeux de règles adaptés au dépôt (premier correspondant gagne) | **Fait** |
+| Référentiel | [code-health-rules.json](../.codescene/code-health-rules.json) | 12 jeux de règles adaptés au dépôt (premier correspondant gagne) | **Fait** |
 | Documentation du référentiel | [README.md](README.md) | Raison de chaque jeu de règles | **Fait** |
 | Agent | [../.claude/agents/codescene.md](../.claude/agents/codescene.md) | Scan, correction, boucle, rapport ; relit le JSON à chaque exécution ; aucun outil réseau | **Fait** |
-| Serveur MCP | `.mcp.json` (racine) + `.claude/mcp/codescene.sh` | Déclare `codescene` ; le wrapper vérifie le binaire (`CODESCENE_MCP_BIN`, défaut `cs-mcp`), exporte `CODESCENE_RULES_FILE`, passe `CODESCENE_MCP_ARGS`, puis `exec` | **Fichiers faits**, connexion en attente du binaire |
+| Serveur MCP | `.mcp.json` (racine) + `.claude/mcp/codescene.sh` | `.mcp.json` lance `cs-mcp` directement (sous Windows, `bash` y désignait WSL : connexion fermée) ; le wrapper sert au diagnostic manuel depuis Git Bash. Il vérifie le binaire (`CODESCENE_MCP_BIN`, défaut `cs-mcp`, sinon `%LOCALAPPDATA%\Programs\cs-mcp\cs-mcp.exe`), passe `CODESCENE_MCP_ARGS`, puis `exec` | **Fait** : `cs-mcp` v1.5.20 installé, 29 outils exposés ; en attente de l'approbation `/mcp` et de `cs-mcp auth` |
 | Skill | `.claude/skills/code-health/SKILL.md` | `/code-health [cible]` : vérifie le MCP, lance l'agent, rappelle bloqueur, seuil, limite, restitue le verdict | **Fait** |
 | Rapport | `.claude/skills/code-health/rapport.sh` | Lit `artifacts/code-health/resultats.json` avec `jq`, produit `rapport.html` (HTML généré par script, valeurs échappées, thème clair et sombre) | **Fait** |
 | Garde | `.claude/hooks/garde-codescene.sh` | Hook PreToolUse : refuse l'écriture du référentiel, de `Data/Migrations/**` et de `*.Designer.cs` | À faire |
-| Permissions | `.claude/settings.json` | `allow` `mcp__codescene__*`, `deny` `Edit`/`Write` sur `codescene/**` | À faire (en dernier) |
+| Permissions | `.claude/settings.json` | `allow` des 7 outils locaux `mcp__codescene__…` de l'agent, `deny` `Edit`/`Write` sur `.codescene/**` | À faire (en dernier) |
 
 ### 4.1 Référentiel
 
@@ -131,7 +133,7 @@ dette existante, rappel du référentiel utilisé.
 | 5 | Créer `codescene.sh` et `.mcp.json` | Claude | **Fait** (connexion non vérifiée : aucun binaire installé) | `bash -n` OK ; sans binaire, le wrapper sort en code 2 avec un message clair ; `claude mcp list` à vérifier après l'étape 4 |
 | 6 | Relever les outils MCP, confirmer le chemin du référentiel, scan de référence, calibrer les seuils d'`Endpoints/` | Claude | À faire | Un appel renvoie un score pour `OrderingEndpoints.cs` ; diff à valider ; seuil 9,0 confirmé |
 | 7 | Créer le skill `/code-health` et `rapport.sh` | Claude | **Fait** | `bash -n` OK ; rapport généré depuis un exemple, HTML injecté bien échappé ; JSON absent : code 2 |
-| 8 | Ajouter permissions, `deny` sur `codescene/**` et `garde-codescene.sh` (en dernier, sinon le calibrage de l'étape 6 serait bloqué) | Claude | À faire | Un `Edit` sur `codescene/` est refusé |
+| 8 | Ajouter permissions, `deny` sur `.codescene/**` et `garde-codescene.sh` (en dernier, sinon le calibrage de l'étape 6 serait bloqué) | Claude | À faire | Un `Edit` sur `codescene/` est refusé |
 | 9 | Essai sur une branche jetable avec un smell volontaire | Claude | À faire | La boucle converge à zéro bloqueur |
 | 10 | Essai avec un smell impossible à lever | Claude | À faire | Arrêt à 5 itérations ou sans progrès, le rapport l'indique |
 | 11 | Documenter dans `CLAUDE.md` | Claude | À faire | Section courte et relue |

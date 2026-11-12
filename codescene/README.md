@@ -3,7 +3,7 @@
 Référentiel local de santé du code (CodeScene) pour ce dépôt. Le JSON ne peut pas contenir de commentaires :
 ce fichier explique **pourquoi** chaque jeu de règles existe.
 
-- Fichier de règles : [code-health-rules.json](code-health-rules.json)
+- Fichier de règles : [code-health-rules.json](../.codescene/code-health-rules.json)
 - Agent qui s'en sert : [.claude/agents/codescene.md](../.claude/agents/codescene.md) (il relit le JSON à chaque exécution)
 - Conception de l'agent, composants et plan d'action : [conception-agent.md](conception-agent.md)
 

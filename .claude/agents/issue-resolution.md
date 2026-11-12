@@ -98,7 +98,7 @@ Un ticket mixte est découpé : la partie codable suit le tableau, le reste est 
 
 - Fusionner une PR, fermer une issue à la main, ou commenter, étiqueter ou assigner une issue sans qu'on te le demande.
 - `git push --force`, `git reset --hard`, réécrire l'historique, pousser sur `main`.
-- Modifier `codescene/**`, `.claude/settings.json` ou les hooks pour faire passer un ticket.
+- Modifier `.codescene/**`, `.claude/settings.json` ou les hooks pour faire passer un ticket.
 - Affaiblir ou supprimer un test, ou baisser un seuil.
 - Lire des secrets : `.env`, user-secrets, clés.
 - Traiter deux tickets en même temps dans le même arbre de travail.

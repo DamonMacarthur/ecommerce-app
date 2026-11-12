@@ -1,5 +1,5 @@
 {
-  "usage": "Référentiel local CodeScene de ce dépôt (codescene/code-health-rules.json). Rule sets évalués de haut en bas, le premier qui correspond s'applique. Voir codescene/README.md pour la raison de chaque jeu. Prise en charge de Razor par l'outil non vérifiée : aucune règle dédiée.",
+  "usage": "Référentiel local CodeScene de ce dépôt (.codescene/code-health-rules.json). Rule sets évalués de haut en bas, le premier qui correspond s'applique. Voir codescene/README.md pour la raison de chaque jeu. Prise en charge de Razor par l'outil non vérifiée : aucune règle dédiée.",
   "rule_sets": [
     {
       "matching_content_path": "**/Migrations/**",

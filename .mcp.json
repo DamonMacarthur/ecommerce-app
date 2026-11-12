@@ -1,8 +1,12 @@
 {
   "mcpServers": {
     "codescene": {
-      "command": "bash",
-      "args": [".claude/mcp/codescene.sh"]
+      "command": "cs-mcp",
+      "args": [],
+      "env": {
+        "CS_ACCESS_TOKEN": "",
+        "CS_ENABLED_TOOLS": "code_health_score,code_health_review,analyze_change_set,pre_commit_code_health_safeguard,rules_config_validate,rules_config_list_thresholds,explain_code_health"
+      }
     }
   }
 }

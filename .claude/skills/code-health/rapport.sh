@@ -47,7 +47,7 @@ jq -r '
    else "<table><tr><th>Fichier</th><th>Smell</th></tr>" + ((.dette_existante | map("<tr><td><code>\(.chemin | e)</code></td><td>\(.smell | e)</td></tr>")) | join("")) + "</table>" end),
   "<h2>Anomalies du référentiel</h2>",
   "<p>\(.anomalies_referentiel | liste)</p>",
-  "<p>Référentiel : <code>codescene/code-health-rules.json</code> (voir <code>codescene/README.md</code>).</p>",
+  "<p>Référentiel : <code>.codescene/code-health-rules.json</code> (voir <code>codescene/README.md</code>).</p>",
   "</body></html>"
   ] | join("\n")
 ' "$entree" >"$sortie"

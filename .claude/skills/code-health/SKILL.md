@@ -17,7 +17,7 @@ Ne simule pas de scan et n'invente aucun score.
 ## 2. Lancer l'agent
 
 Délègue à l'agent `codescene` (`.claude/agents/codescene.md`) avec la cible ci-dessus. Il relit le référentiel
-`codescene/code-health-rules.json`, applique la définition de bloqueur, boucle au plus 5 fois et écrit
+`.codescene/code-health-rules.json`, applique la définition de bloqueur, boucle au plus 5 fois et écrit
 `artifacts/code-health/resultats.json` puis le rapport HTML avec `bash .claude/skills/code-health/rapport.sh`.
 
 Rappels :
@@ -37,4 +37,4 @@ Rapport : artifacts/code-health/rapport.html
 ```
 
 S'il reste des bloqueurs, donne pour chacun le fichier, le smell et la cause. Signale toute « anomalie du référentiel » relevée par l'agent :
-c'est une personne qui décide de modifier `codescene/code-health-rules.json`, jamais l'agent.
+c'est une personne qui décide de modifier `.codescene/code-health-rules.json`, jamais l'agent.
