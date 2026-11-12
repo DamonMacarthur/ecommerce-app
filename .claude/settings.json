@@ -1,5 +1,8 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "env": {
+    "DOTNET_CLI_UI_LANGUAGE": "en"
+  },
   "permissions": {
     "allow": [
       "Bash(dotnet build *)",
@@ -77,9 +80,6 @@
       "Bash(dotnet ef migrations add *)"
     ]
   },
-  "env": {
-    "DOTNET_CLI_UI_LANGUAGE": "en"
-  },
   "hooks": {
     "PreToolUse": [
       {
@@ -124,5 +124,16 @@
         ]
       }
     ]
+  },
+  "enabledPlugins": {
+    "orchestrateur-backlog@marketplace-bbh": true
+  },
+  "extraKnownMarketplaces": {
+    "marketplace-bbh": {
+      "source": {
+        "source": "github",
+        "repo": "bassambhamed/marketplace-bbh"
+      }
+    }
   }
 }
