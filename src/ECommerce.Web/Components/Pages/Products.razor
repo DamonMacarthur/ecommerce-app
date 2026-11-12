@@ -14,28 +14,29 @@
 }
 else
 {
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Product</th>
-                <th>Description</th>
-                <th class="text-end">Price</th>
-                <th class="text-end">Stock</th>
-                <th></th>
+    @* Explicit table roles keep the table semantics while rows are laid out as cards in a CSS grid. *@
+    <table class="table product-grid" role="table">
+        <thead role="rowgroup">
+            <tr role="row">
+                <th role="columnheader">Product</th>
+                <th role="columnheader">Description</th>
+                <th role="columnheader" class="text-end">Price</th>
+                <th role="columnheader" class="text-end">Stock</th>
+                <th role="columnheader"></th>
             </tr>
         </thead>
-        <tbody>
+        <tbody role="rowgroup">
             @foreach (var p in _products)
             {
-                <tr>
-                    <td>@p.Name</td>
-                    <td>@p.Description</td>
-                    <td class="text-end">
+                <tr role="row" class="product-card">
+                    <td role="cell" class="product-name" data-label="Product">@p.Name</td>
+                    <td role="cell" class="product-description" data-label="Description">@p.Description</td>
+                    <td role="cell" class="product-price" data-label="Price">
                         @if (p.CurrentPrice < p.Price)
                         {
                             <s class="text-muted">@p.Price.ToString("C")</s>
                             <strong>@p.CurrentPrice.ToString("C")</strong>
-                            <span class="badge bg-danger">-@p.PromoPercent%</span>
+                            <span class="badge promo-badge">-@p.PromoPercent%</span>
                             <small class="text-muted d-block">until @p.PromoValidUntil?.ToString("d")</small>
                         }
                         else
@@ -43,8 +44,8 @@ else
                             @p.Price.ToString("C")
                         }
                     </td>
-                    <td class="text-end">@p.AvailableStock</td>
-                    <td class="text-end">
+                    <td role="cell" class="product-stock" data-label="Stock">@p.AvailableStock</td>
+                    <td role="cell" class="product-action">
                         <button class="btn btn-sm btn-outline-primary" @onclick="() => AddToCart(p)">Add</button>
                     </td>
                 </tr>
